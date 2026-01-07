@@ -2,7 +2,7 @@
 -- BI-DBS Movie Database - All 41 SQL Queries
 -- Course: BI-DBS.21 DBS-2025
 -- Author: xozte001
--- 
+--
 -- This file contains all SQL queries organized by category
 -- Each query includes: Natural language description, Category, SQL, and RA
 -- ============================================================================
@@ -298,10 +298,10 @@ ORDER BY year DESC, imdb_rating DESC;
 -- D33 - CASE Expression (Category: L)
 -- Natural: Categorize movies by their rating into quality tiers using CASE expression.
 -- ============================================================================
-SELECT 
-    title, 
+SELECT
+    title,
     imdb_rating,
-    CASE 
+    CASE
         WHEN imdb_rating >= 9.0 THEN 'Masterpiece'
         WHEN imdb_rating >= 8.0 THEN 'Excellent'
         WHEN imdb_rating >= 7.0 THEN 'Good'
@@ -322,7 +322,7 @@ WHERE title LIKE '%the%' OR title LIKE '%The%';
 -- D35 - Date Functions (Category: O)
 -- Natural: Calculate movie age and extract year components from release dates using date functions.
 -- ============================================================================
-SELECT 
+SELECT
     movie_id,
     title,
     release_date,
@@ -341,7 +341,7 @@ SELECT * FROM high_rated_movies;
 -- D37 - Subquery in SELECT (Category: A, F2)
 -- Natural: List movies and the count of awards they won using a subquery in the SELECT clause.
 -- ============================================================================
-SELECT 
+SELECT
     m.title,
     m.year,
     (SELECT COUNT(*) FROM AWARD a WHERE a.movie_id = m.movie_id) as award_count
