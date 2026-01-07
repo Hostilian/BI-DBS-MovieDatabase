@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI-DBS Movie Database Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ecf0f1;
+            min-height: 100vh;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(155, 89, 182, 0.9)),
+                        url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1600') center/cover;
+            padding: 100px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+        
+        .hero .badge {
+            font-size: 1rem;
+            padding: 10px 20px;
+            margin: 5px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--secondary-color), #9b59b6);
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .stat-card .stat-label {
+            font-size: 1.1rem;
+            color: #bdc3c7;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            margin: 3px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .category-badge.covered {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .category-badge.uncovered {
+            background: rgba(255, 255, 255, 0.2);
+            color: #bdc3c7;
+        }
+        
+        .query-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .query-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .query-id {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .status-check {
+            color: var(--success-color);
+        }
+        
+        .status-x {
+            color: var(--accent-color);
+        }
+        
+        .schema-table {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .schema-table th {
+            background: var(--primary-color);
+        }
+        
+        pre {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        code {
+            color: #58a6ff;
+        }
+        
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+        
+        .nav-pills .nav-link {
+            color: #ecf0f1;
+            border-radius: 25px;
+            padding: 10px 25px;
+            margin: 5px;
+        }
+        
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--secondary-color), #9b59b6);
+        }
+        
+        .requirement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .requirement-item.success {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .er-diagram {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1><i class="fas fa-film me-3"></i>BI-DBS Movie Database</h1>
+            <p class="lead mb-4">A comprehensive database project for the BI-DBS course at Czech University of Life Sciences Prague</p>
+            <div>
+                <span class="badge bg-primary"><i class="fas fa-database me-2"></i>PostgreSQL</span>
+                <span class="badge bg-success"><i class="fas fa-check me-2"></i>41 Queries</span>
+                <span class="badge bg-info"><i class="fas fa-calculator me-2"></i>41 RA Expressions</span>
+                <span class="badge bg-warning text-dark"><i class="fas fa-layer-group me-2"></i>26 Categories</span>
+            </div>
+            <div class="mt-4">
+                <a href="https://github.com/yourusername/BI-DBS-MovieDatabase" class="btn btn-light btn-lg me-2">
+                    <i class="fab fa-github me-2"></i>View on GitHub
+                </a>
+                <a href="#queries" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-search me-2"></i>Explore Queries
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Statistics -->
+        <div class="row mb-5">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">41</div>
+                    <div class="stat-label"><i class="fas fa-code me-2"></i>SQL Queries</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">41</div>
+                    <div class="stat-label"><i class="fas fa-superscript me-2"></i>RA Expressions</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label"><i class="fas fa-table me-2"></i>Database Tables</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label"><i class="fas fa-film me-2"></i>Sample Movies</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements Status -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Project Requirements Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="requirement-item success">
+                                    <span>References filled</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>Natural queries with text</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>25+ SQL queries (41/25)</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>SQL returns valid results</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>Category coverage (A-P)</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>Create script uploaded</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>Create script valid</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="requirement-item success">
+                                    <span>Insert script uploaded</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>Tables have records</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>Insert script valid</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>25+ natural queries (41/25)</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>RA = SQL results</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>10+ RA queries (41/10)</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                                <div class="requirement-item success">
+                                    <span>RA returns valid results</span>
+                                    <i class="fas fa-check-circle status-check fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Coverage -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Query Category Coverage</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <span class="category-badge covered">A</span>
+                        <span class="category-badge covered">B</span>
+                        <span class="category-badge covered">C</span>
+                        <span class="category-badge covered">D1</span>
+                        <span class="category-badge covered">D2</span>
+                        <span class="category-badge covered">F1</span>
+                        <span class="category-badge covered">F2</span>
+                        <span class="category-badge covered">F3</span>
+                        <span class="category-badge covered">F4</span>
+                        <span class="category-badge covered">F5</span>
+                        <span class="category-badge covered">G1</span>
+                        <span class="category-badge covered">G2</span>
+                        <span class="category-badge covered">G3</span>
+                        <span class="category-badge covered">G4</span>
+                        <span class="category-badge covered">H1</span>
+                        <span class="category-badge covered">H2</span>
+                        <span class="category-badge covered">H3</span>
+                        <span class="category-badge covered">I1</span>
+                        <span class="category-badge covered">I2</span>
+                        <span class="category-badge covered">J</span>
+                        <span class="category-badge covered">K</span>
+                        <span class="category-badge covered">L</span>
+                        <span class="category-badge covered">M</span>
+                        <span class="category-badge covered">N</span>
+                        <span class="category-badge covered">O</span>
+                        <span class="category-badge covered">P</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Schema -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-project-diagram me-2"></i>Database Schema</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark schema-table">
+                                <thead>
+                                    <tr>
+                                        <th>Table</th>
+                                        <th>Description</th>
+                                        <th>Key Fields</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>MOVIE</code></td>
+                                        <td>Core movie information</td>
+                                        <td>movie_id, title, year, imdb_rating, director_id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DIRECTOR</code></td>
+                                        <td>Film directors</td>
+                                        <td>director_id, name, birth_year</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ACTOR</code></td>
+                                        <td>Actors/actresses</td>
+                                        <td>actor_id, name, birth_year</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>GENRE</code></td>
+                                        <td>Movie genres</td>
+                                        <td>genre_id, genre_name</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>STUDIO</code></td>
+                                        <td>Production studios</td>
+                                        <td>studio_id, studio_name, country_id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>COUNTRY</code></td>
+                                        <td>Countries</td>
+                                        <td>country_id, country_name, country_code</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>AWARD</code></td>
+                                        <td>Movie awards</td>
+                                        <td>award_id, award_name, category, movie_id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>MOVIE_GENRE</code></td>
+                                        <td>Movie-Genre junction</td>
+                                        <td>movie_id, genre_id</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>MOVIE_CAST</code></td>
+                                        <td>Movie-Actor junction</td>
+                                        <td>movie_id, actor_id, role</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>USER_RATING</code></td>
+                                        <td>User reviews</td>
+                                        <td>rating_id, movie_id, rating, review</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Queries -->
+        <div class="row mb-5" id="queries">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-code me-2"></i>Sample Queries</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="query-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="query-id">D1</span>
+                                <span class="category-badge covered">D1</span>
+                            </div>
+                            <p><strong>Natural:</strong> Show only the title and year for every movie to build a compact catalog view.</p>
+                            <pre><code>SELECT title, year FROM MOVIE;</code></pre>
+                            <p class="mb-0 text-muted"><strong>RA:</strong> π title, year (MOVIE)</p>
+                        </div>
+
+                        <div class="query-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="query-id">D5</span>
+                                <div>
+                                    <span class="category-badge covered">A</span>
+                                    <span class="category-badge covered">D1</span>
+                                    <span class="category-badge covered">F1</span>
+                                    <span class="category-badge covered">G1</span>
+                                    <span class="category-badge covered">G4</span>
+                                </div>
+                            </div>
+                            <p><strong>Natural:</strong> Find actors who have appeared in every genre (Universal Quantification).</p>
+                            <pre><code>SELECT a.actor_id, a.name
+FROM ACTOR a
+WHERE NOT EXISTS (
+    SELECT g.genre_id FROM GENRE g
+    WHERE NOT EXISTS (
+        SELECT 1 FROM MOVIE_CAST mc
+        JOIN MOVIE_GENRE mg ON mc.movie_id = mg.movie_id
+        WHERE mc.actor_id = a.actor_id AND mg.genre_id = g.genre_id
+    )
+);</code></pre>
+                        </div>
+
+                        <div class="query-item">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="query-id">D28</span>
+                                <div>
+                                    <span class="category-badge covered">A</span>
+                                    <span class="category-badge covered">F1</span>
+                                    <span class="category-badge covered">G2</span>
+                                    <span class="category-badge covered">I1</span>
+                                    <span class="category-badge covered">I2</span>
+                                </div>
+                            </div>
+                            <p><strong>Natural:</strong> Find directors with their average movie rating using a subquery in the FROM clause.</p>
+                            <pre><code>SELECT d.name, sub.avg_rating
+FROM DIRECTOR d
+JOIN (
+    SELECT director_id, AVG(imdb_rating) as avg_rating
+    FROM MOVIE
+    GROUP BY director_id
+) sub ON d.director_id = sub.director_id
+ORDER BY sub.avg_rating DESC;</code></pre>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="https://github.com/yourusername/BI-DBS-MovieDatabase/blob/main/queries/all_queries.sql" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt me-2"></i>View All 41 Queries
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-download me-2"></i>Quick Start</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre><code># Clone the repository
+git clone https://github.com/yourusername/BI-DBS-MovieDatabase.git
+cd BI-DBS-MovieDatabase
+
+# Create the database
+psql -c "CREATE DATABASE movie_database;"
+
+# Run the create script
+psql -d movie_database -f scripts/create_schema.sql
+
+# Populate with sample data
+psql -d movie_database -f scripts/insert_data.sql</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-2">
+                <i class="fas fa-graduation-cap me-2"></i>
+                <strong>Course:</strong> BI-DBS.21 DBS-2025 | 
+                <strong>Student:</strong> xozte001
+            </p>
+            <p class="mb-2">
+                <i class="fas fa-university me-2"></i>
+                Czech University of Life Sciences Prague
+            </p>
+            <p class="text-muted mb-0">
+                <small>Data Modeller v9.2.1 | © 2026 ČVUT FIT. All Rights Reserved.</small>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
